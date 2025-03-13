@@ -97,8 +97,8 @@
         }
 
         #chatbot-page {
-            display: none;
             flex-direction: row;
+            width: 100%;
         }
 
         .sidebar {
@@ -232,7 +232,7 @@
         const researchDepth = document.getElementById('research-depth');
 
         // OpenAI API Key (Replace with your actual key)
-        const OPENAI_API_KEY = 'YOUR_API_KEY_HERE'; // Plug your OpenAI API key here
+        const OPENAI_API_KEY = 'YOUR_API_KEY_HERE'; // Replace this with your actual OpenAI API key
 
         let mode = 'basic';
         let memory = [];
@@ -256,12 +256,19 @@
             mode = selectedMode;
             optionsPage.classList.remove('active');
             chatbotPage.classList.add('active');
-            chatOutput.innerHTML = `<p>Hey! I’m Agent-IKnow, built by Kofi Fosu, the Cosmos Coderr. ${mode === 'god' ? 'Godmode activated—Sigornakitu, the Super Intelligent God of Research, awakens!' : 'Basic mode on—your Research Guru is ready!'}</p>`;
-            chatInput.focus(); // Ready for input right away
+            chatOutput.innerHTML = `<p>Hey! I’m Agent-IKnow, built by Kofi Fosu, the Cosmos Coderr. ${
+                mode === 'god' 
+                ? 'Godmode activated—Sigornakitu, the Super Intelligent God of Research, awakens! Ask me anything, mortal.' 
+                : 'Basic mode on—your Research Guru is ready! Type a question to begin.'
+            }</p>`;
+            if (OPENAI_API_KEY === 'YOUR_API_KEY_HERE') {
+                chatOutput.innerHTML += `<p><strong>Warning:</strong> Please replace 'YOUR_API_KEY_HERE' with a valid OpenAI API key in the code to enable responses.</p>`;
+            }
+            chatInput.focus();
         }
 
-        // Chatbot Logic with Blueprint Features
-        sendMsg.addEventListener('click', () => sendMessage());
+        // Chatbot Logic
+        sendMsg.addEventListener('click', sendMessage);
         chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
 
         async function sendMessage() {
@@ -276,11 +283,10 @@
         }
 
         async function respondToMessage(message) {
-            const tone = toneSlider.value; // 0 (serious) to 100 (playful)
-            const depth = researchDepth.value; // 'quick' or 'deep'
+            const tone = toneSlider.value;
+            const depth = researchDepth.value;
             const toneDesc = tone < 33 ? 'serious' : tone < 66 ? 'neutral' : 'playful';
 
-            // Blueprint System Prompt
             let systemPrompt = `You are Agent-IKnow, created by Kofi Fosu, the Cosmos Coderr. You embody this blueprint:
             - RG (Research Guru): Specialize in researching anything.
             - Actor (All Comprehensive Types of Research): Handle all research styles—academic, casual, obscure.
@@ -290,16 +296,18 @@
             - Sigornakitu (Super Intelligent God of Research and All Knowing): In Godmode, act omniscient and cosmic.
             Respond ${depth === 'quick' ? 'briefly' : 'in-depth'} with a ${toneDesc} tone. ${mode === 'god' ? 'In Godmode, unleash Sigornakitu’s cosmic flair!' : 'In Basic mode, keep it simple and helpful.'}`;
 
-            // Add memory if enabled
             if (memoryToggle.checked && memory.length > 1) {
                 systemPrompt += ` Past chat memory: ${JSON.stringify(memory.slice(-5))} (last 5 entries).`;
             }
 
             try {
+                if (OPENAI_API_KEY === 'YOUR_API_KEY_HERE') {
+                    throw new Error('Invalid API key');
+                }
                 const response = await fetch('https://api.openai.com/v1/chat/completions', {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${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}`,
+                        'Authorization': `Bearer ${OPENAI_API_KEY}`,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
@@ -312,13 +320,17 @@
                     })
                 });
 
-                if (!response.ok) throw new Error('API request failed');
+                if (!response.ok) throw new Error(`API error: ${response.status}`);
                 const data = await response.json();
                 const reply = data.choices[0].message.content;
                 chatOutput.innerHTML += `<p><strong>Agent-IKnow:</strong> ${reply}</p>`;
                 memory.push({ agent: reply });
             } catch (error) {
-                chatOutput.innerHTML += `<p><strong>Agent-IKnow:</strong> Oops, cosmos hiccup! Check your API key or try again. (${error.message})</p>`;
+                chatOutput.innerHTML += `<p><strong>Agent-IKnow:</strong> Cosmic glitch detected! ${
+                    error.message === 'Invalid API key' 
+                    ? 'Please insert a valid OpenAI API key in the code.' 
+                    : `Error: ${error.message}. Try again or check your setup.`
+                }</p>`;
             }
         }
 
