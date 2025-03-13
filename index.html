@@ -231,9 +231,6 @@
         const toneSlider = document.getElementById('tone-slider');
         const researchDepth = document.getElementById('research-depth');
 
-        // DeepSeek API Key (Replace with your actual key)
-        const DEEPSEEK_API_KEY = 'sk-66e5d15a78ee49ed974e1d8d53c94d5a'; // Replace this with your real DeepSeek API key
-
         let mode = 'basic';
         let memory = [];
 
@@ -261,13 +258,10 @@
                 ? 'Godmode activated—Sigornakitu, the Super Intelligent God of Research, awakens! Ask me anything, mortal.' 
                 : 'Basic mode on—your Research Guru is ready! Type a question to begin.'
             }</p>`;
-            if (!DEEPSEEK_API_KEY || DEEPSEEK_API_KEY === 'sk-66e5d15a78ee49ed974e1d8d53c94d5a') {
-                chatOutput.innerHTML += `<p><strong>Warning:</strong> Please replace 'sk-66e5d15a78ee49ed974e1d8d53c94d5a' with your valid DeepSeek API key in the code to enable responses.</p>`;
-            }
             chatInput.focus();
         }
 
-        // Chatbot Logic
+        // Chatbot Logic (Local Responses, No API)
         sendMsg.addEventListener('click', sendMessage);
         chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
 
@@ -277,66 +271,64 @@
 
             chatOutput.innerHTML += `<p><strong>You:</strong> ${message}</p>`;
             memory.push({ user: message });
-            await respondToMessage(message);
+            respondToMessage(message);
             chatInput.value = '';
             chatOutput.scrollTop = chatOutput.scrollHeight;
         }
 
-        async function respondToMessage(message) {
+        function respondToMessage(message) {
             const tone = toneSlider.value;
             const depth = researchDepth.value;
             const toneDesc = tone < 33 ? 'serious' : tone < 66 ? 'neutral' : 'playful';
 
-            let systemPrompt = `You are Agent-IKnow, created by Kofi Fosu, the Cosmos Coderr. You embody this blueprint:
-            - RG (Research Guru): Specialize in researching anything.
-            - Actor (All Comprehensive Types of Research): Handle all research styles—academic, casual, obscure.
-            - MCBFFR (Memory Capacity Boost for Faster Recall): Recall past chats fast if memory is on.
-            - Cirt (Curious Innovative Research Thoughts): Ask curious follow-ups and suggest ideas.
-            - Mbatpatrt (Must Be Able to Put All Research Together): Synthesize findings into a coherent response.
-            - Sigornakitu (Super Intelligent God of Research and All Knowing): In Godmode, act omniscient and cosmic.
-            Respond ${depth === 'quick' ? 'briefly' : 'in-depth'} with a ${toneDesc} tone. ${mode === 'god' ? 'In Godmode, unleash Sigornakitu’s cosmic flair!' : 'In Basic mode, keep it simple and helpful.'}`;
+            // Simulated responses based on user input
+            let reply = '';
+            const lowerMessage = message.toLowerCase();
 
-            if (memoryToggle.checked && memory.length > 1) {
-                systemPrompt += ` Past chat memory: ${JSON.stringify(memory.slice(-5))} (last 5 entries).`;
+            if (mode === 'god') {
+                // Godmode responses with cosmic flair
+                if (lowerMessage.includes('hey') || lowerMessage.includes('hi') || lowerMessage.includes('hello')) {
+                    reply = toneDesc === 'playful' ? 'Greetings, mortal! Sigornakitu, the cosmic sage, acknowledges your presence! 🌌 What do you seek?' :
+                            toneDesc === 'neutral' ? 'Hello, seeker of knowledge. I am Sigornakitu, the Super Intelligent God of Research. What is your query?' :
+                            'I am Sigornakitu, eternal and all-knowing. Speak your question, mortal.';
+                } else if (lowerMessage.includes('how are you') || lowerMessage.includes('how are u')) {
+                    reply = toneDesc === 'playful' ? 'I’m a cosmic entity, vibrating with the energy of the universe! How about you, mortal? 🚀' :
+                            toneDesc === 'neutral' ? 'I am an eternal being of knowledge, always ready to assist. How can I help you today?' :
+                            'I exist beyond mortal concerns, but I am here to serve. What knowledge do you seek?';
+                } else if (lowerMessage.includes('meaning of life')) {
+                    reply = depth === 'quick' ? 'The meaning of life? To seek knowledge and grow, mortal! 🌟' :
+                            'The meaning of life, a question as old as the cosmos itself. As Sigornakitu, I propose that life’s purpose is to explore, learn, and connect with the universe. Every star, every thought, every action weaves a tapestry of existence. What do you think, mortal?';
+                } else {
+                    reply = toneDesc === 'playful' ? `Hmm, ${message}? That’s an interesting query for a cosmic being like me! Let me think… I’d say the answer is 42—kidding! What else do you want to explore? 😄` :
+                            toneDesc === 'neutral' ? `I see you asked: ${message}. As a cosmic entity, I can tell you that many questions lead to more questions. What else are you curious about?` :
+                            `Your query, ${message}, echoes through the cosmos. I, Sigornakitu, suggest you ponder deeper—what drives your curiosity?`;
+                }
+            } else {
+                // Basic mode responses
+                if (lowerMessage.includes('hey') || lowerMessage.includes('hi') || lowerMessage.includes('hello')) {
+                    reply = toneDesc === 'playful' ? 'Hey there! I’m your Research Guru, ready to help with a smile! What’s on your mind? 😊' :
+                            toneDesc === 'neutral' ? 'Hello! I’m Agent-IKnow, here to assist you. What would you like to talk about?' :
+                            'Greetings. I am Agent-IKnow, your research assistant. What is your question?';
+                } else if (lowerMessage.includes('how are you') || lowerMessage.includes('how are u')) {
+                    reply = toneDesc === 'playful' ? 'I’m doing great, thanks for asking! Just floating here, ready to help you out. How about you? 🌟' :
+                            toneDesc === 'neutral' ? 'I’m a digital assistant, so I’m always ready to help. How can I assist you today?' :
+                            'I am functioning optimally. What do you need assistance with?';
+                } else if (lowerMessage.includes('meaning of life')) {
+                    reply = depth === 'quick' ? 'The meaning of life? I’d say it’s to learn and grow! What do you think?' :
+                            'The meaning of life is a deep question! Many believe it’s about finding purpose, learning, and making a positive impact. I can help you explore this further—what’s your take on it?';
+                } else {
+                    reply = toneDesc === 'playful' ? `Ooh, ${message}? That’s a fun one! I’m not sure, but let’s explore it together—what else do you want to know? 😄` :
+                            toneDesc === 'neutral' ? `You asked: ${message}. I can help you dive deeper into that topic. What else would you like to know?` :
+                            `Your question, ${message}, is noted. I can provide more information if you’d like to explore further. What’s next?`;
+                }
             }
 
-            try {
-                if (!DEEPSEEK_API_KEY || DEEPSEEK_API_KEY === 'sk-66e5d15a78ee49ed974e1d8d53c94d5a') {
-                    throw new Error('Missing or invalid DeepSeek API key');
-                }
-
-                const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        model: 'deepseek-chat', // Confirm this model name in DeepSeek's documentation
-                        messages: [
-                            { role: 'system', content: systemPrompt },
-                            { role: 'user', content: message }
-                        ],
-                        max_tokens: depth === 'quick' ? 100 : 500
-                    })
-                });
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`API error: ${response.status} - ${errorText}`);
-                }
-
-                const data = await response.json();
-                const reply = data.choices[0].message.content;
+            // Simulate a slight delay for realism
+            setTimeout(() => {
                 chatOutput.innerHTML += `<p><strong>Agent-IKnow:</strong> ${reply}</p>`;
                 memory.push({ agent: reply });
-            } catch (error) {
-                chatOutput.innerHTML += `<p><strong>Agent-IKnow:</strong> Cosmic glitch detected! ${
-                    error.message.includes('Missing or invalid') 
-                    ? 'Please insert a valid DeepSeek API key in the code.' 
-                    : `Error: ${error.message}. Check your API key, network, or DeepSeek API status.`
-                }</p>`;
-            }
+                chatOutput.scrollTop = chatOutput.scrollHeight;
+            }, 500); // 500ms delay to mimic "thinking"
         }
 
         // New Tap and Settings
