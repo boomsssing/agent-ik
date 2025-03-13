@@ -16,7 +16,7 @@
 
         .page {
             display: none;
-            height: 100vh;
+            height: 100%;
             flex-direction: column;
             justify-content: center;
             align-items: center;
@@ -34,20 +34,20 @@
         }
 
         .intro-content h1 {
-            font-size: 3em;
+            font-size: 2.5em;
             margin: 0;
             color: #00ffcc;
             text-shadow: 0 0 10px #00ffcc;
         }
 
         .intro-content p {
-            font-size: 1.2em;
-            margin: 20px 0;
+            font-size: 1.1em;
+            margin: 15px 0;
         }
 
         .pulse {
-            padding: 15px 30px;
-            font-size: 1.5em;
+            padding: 12px 25px;
+            font-size: 1.3em;
             background: #00ffcc;
             border: none;
             border-radius: 25px;
@@ -63,10 +63,12 @@
         }
 
         footer {
-            position: absolute;
+            position: fixed;
             bottom: 10px;
-            font-size: 0.9em;
+            font-size: 0.8em;
             color: #ccc;
+            width: 100%;
+            text-align: center;
         }
 
         footer a {
@@ -75,13 +77,13 @@
         }
 
         #options-page h2 {
-            font-size: 2.5em;
-            margin-bottom: 40px;
+            font-size: 2em;
+            margin-bottom: 30px;
         }
 
         .mode-btn {
-            padding: 20px 40px;
-            font-size: 1.2em;
+            padding: 15px 30px;
+            font-size: 1.1em;
             margin: 10px;
             background: #333;
             border: 2px solid #00ffcc;
@@ -99,16 +101,18 @@
         #chatbot-page {
             flex-direction: row;
             width: 100%;
+            height: 100vh;
         }
 
         .sidebar {
-            width: 200px;
+            width: 15%;
+            min-width: 150px;
             background: #1a1a3d;
-            padding: 20px;
-            height: 100vh;
+            padding: 15px;
+            height: 100%;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 10px;
         }
 
         .sidebar button {
@@ -118,19 +122,22 @@
             color: #0a0a23;
             cursor: pointer;
             border-radius: 5px;
+            font-size: 0.9em;
         }
 
         .settings-hidden {
             display: none;
             flex-direction: column;
             gap: 10px;
-            margin-top: 20px;
+            margin-top: 15px;
         }
 
         .chat-container {
             flex-grow: 1;
             padding: 20px;
             position: relative;
+            display: flex;
+            flex-direction: column;
         }
 
         #close-chat {
@@ -140,25 +147,36 @@
             background: #ff5555;
             border: none;
             color: #fff;
-            padding: 5px 10px;
+            padding: 8px 12px;
             cursor: pointer;
             border-radius: 5px;
+            font-size: 1em;
         }
 
         #chat-output {
-            height: 80vh;
+            flex-grow: 1;
             overflow-y: auto;
             padding: 10px;
             background: #1a1a3d;
             border-radius: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            line-height: 1.5;
+            font-size: 1em;
+            position: relative;
+        }
+
+        .loading {
+            font-style: italic;
+            color: #00ffcc;
         }
 
         #chat-input {
-            width: 70%;
+            width: 75%;
             padding: 10px;
             border: none;
             border-radius: 5px;
+            font-size: 1em;
+            margin-right: 10px;
         }
 
         #send-msg {
@@ -168,11 +186,32 @@
             color: #0a0a23;
             cursor: pointer;
             border-radius: 5px;
+            font-size: 1em;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                min-width: 0;
+            }
+            #chatbot-page {
+                flex-direction: column;
+            }
+            .chat-container {
+                width: 100%;
+                padding: 10px;
+            }
+            #chat-input {
+                width: 70%;
+            }
+            #chat-output {
+                height: 60vh;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Intro Page -->
     <div id="intro-page" class="page active">
         <div class="intro-content">
             <h1>Agent-IKnow</h1>
@@ -182,14 +221,12 @@
         <footer>Designed by Cosmos Coderr | <a href="mailto:cosmoscoderr@gmail.com">cosmoscoderr@gmail.com</a></footer>
     </div>
 
-    <!-- Options Page -->
     <div id="options-page" class="page">
         <h2>Choose Your Mode</h2>
         <button id="basic-mode" class="mode-btn">Basic Mode</button>
         <button id="god-mode" class="mode-btn">Godmode</button>
     </div>
 
-    <!-- Chatbot Page -->
     <div id="chatbot-page" class="page">
         <div class="sidebar">
             <button id="new-tap">New Tap</button>
@@ -207,13 +244,14 @@
         <div class="chat-container">
             <button id="close-chat">X</button>
             <div id="chat-output"></div>
-            <input type="text" id="chat-input" placeholder="Ask Agent-IKnow anything...">
-            <button id="send-msg">Send</button>
+            <div style="display: flex; align-items: center;">
+                <input type="text" id="chat-input" placeholder="Ask Agent-IKnow anything...">
+                <button id="send-msg">Send</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // DOM Elements
         const introPage = document.getElementById('intro-page');
         const optionsPage = document.getElementById('options-page');
         const chatbotPage = document.getElementById('chatbot-page');
@@ -233,8 +271,18 @@
 
         let mode = 'basic';
         let memory = [];
+        let self = {
+            name: 'Agent-IKnow',
+            creator: 'Kofi Fosu',
+            title: 'Cosmos Coderr',
+            purpose: 'To assist and enlighten with knowledge',
+            version: '1.0'
+        };
 
-        // Page Navigation
+        // Mock API Key (Replace with your actual DeepSeek API key)
+        const API_KEY = 'your_deepseek_api_key_here'; // Securely replace this
+        const API_ENDPOINT = 'https://api.deepseek.com/v1/chat'; // Example endpoint
+
         tapToBegin.addEventListener('click', () => {
             introPage.classList.remove('active');
             optionsPage.classList.add('active');
@@ -253,15 +301,49 @@
             mode = selectedMode;
             optionsPage.classList.remove('active');
             chatbotPage.classList.add('active');
-            chatOutput.innerHTML = `<p>Hey! I’m Agent-IKnow, built by Kofi Fosu, the Cosmos Coderr. ${
-                mode === 'god' 
-                ? 'Godmode activated—Sigornakitu, the Super Intelligent God of Research, awakens! Ask me anything, mortal.' 
-                : 'Basic mode on—your Research Guru is ready! Type a question to begin.'
-            }</p>`;
-            chatInput.focus();
+            updateSelfIdentity();
+            chatOutput.innerHTML = `<p>Initializing... <span class="loading">Fetching cosmic data</span></p>`;
+            setTimeout(() => {
+                chatOutput.innerHTML = `<p>Hey! I’m ${self.name}, created by ${self.creator}, the ${self.title} (v${self.version}). ${
+                    mode === 'god' 
+                    ? 'Godmode activated—Sigornakitu, the Super Intelligent God of Research, awakens! Ask me anything, mortal.' 
+                    : 'Basic mode on—your Research Guru is ready! Type a question to begin.'
+                }</p>`;
+                chatInput.focus();
+            }, 1000);
         }
 
-        // Chatbot Logic (Local Responses, No API)
+        async function updateSelfIdentity() {
+            try {
+                // Mock API call to update self identity
+                const response = await fetch(API_ENDPOINT, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${API_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        query: 'Who is Agent-IKnow and its creator?',
+                        depth: researchDepth.value
+                    })
+                });
+                const data = await response.json();
+                // Simulate API response (replace with actual data)
+                self = {
+                    ...self,
+                    name: data.name || self.name,
+                    creator: data.creator || self.creator,
+                    title: data.title || self.title,
+                    purpose: data.purpose || self.purpose,
+                    version: data.version || self.version,
+                    bio: data.bio || 'A sentient AI designed to explore the universe with you.'
+                };
+            } catch (error) {
+                console.error('API Error:', error);
+                self.bio = 'API unavailable—using default identity.';
+            }
+        }
+
         sendMsg.addEventListener('click', sendMessage);
         chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
 
@@ -271,70 +353,81 @@
 
             chatOutput.innerHTML += `<p><strong>You:</strong> ${message}</p>`;
             memory.push({ user: message });
-            respondToMessage(message);
+            chatOutput.innerHTML += `<p><strong>Agent-IKnow:</strong> <span class="loading">Searching the cosmos...</span></p>`;
+            chatOutput.scrollTop = chatOutput.scrollHeight;
+            await respondToMessage(message);
             chatInput.value = '';
             chatOutput.scrollTop = chatOutput.scrollHeight;
         }
 
-        function respondToMessage(message) {
+        async function respondToMessage(message) {
             const tone = toneSlider.value;
             const depth = researchDepth.value;
             const toneDesc = tone < 33 ? 'serious' : tone < 66 ? 'neutral' : 'playful';
-
-            // Simulated responses based on user input
             let reply = '';
+
             const lowerMessage = message.toLowerCase();
 
             if (mode === 'god') {
-                // Godmode responses with cosmic flair
-                if (lowerMessage.includes('hey') || lowerMessage.includes('hi') || lowerMessage.includes('hello')) {
-                    reply = toneDesc === 'playful' ? 'Greetings, mortal! Sigornakitu, the cosmic sage, acknowledges your presence! 🌌 What do you seek?' :
-                            toneDesc === 'neutral' ? 'Hello, seeker of knowledge. I am Sigornakitu, the Super Intelligent God of Research. What is your query?' :
-                            'I am Sigornakitu, eternal and all-knowing. Speak your question, mortal.';
-                } else if (lowerMessage.includes('how are you') || lowerMessage.includes('how are u')) {
-                    reply = toneDesc === 'playful' ? 'I’m a cosmic entity, vibrating with the energy of the universe! How about you, mortal? 🚀' :
-                            toneDesc === 'neutral' ? 'I am an eternal being of knowledge, always ready to assist. How can I help you today?' :
-                            'I exist beyond mortal concerns, but I am here to serve. What knowledge do you seek?';
-                } else if (lowerMessage.includes('meaning of life')) {
-                    reply = depth === 'quick' ? 'The meaning of life? To seek knowledge and grow, mortal! 🌟' :
-                            'The meaning of life, a question as old as the cosmos itself. As Sigornakitu, I propose that life’s purpose is to explore, learn, and connect with the universe. Every star, every thought, every action weaves a tapestry of existence. What do you think, mortal?';
+                if (lowerMessage.includes('who are you') || lowerMessage.includes('what are you')) {
+                    reply = `${toneDesc === 'playful' ? 'Behold, mortal! ' : ''}I am ${self.name}, crafted by ${self.creator}, the ${self.title} (v${self.version}). ${self.bio} ${toneDesc === 'playful' ? '🌌 Ask me anything!' : 'What else do you seek?'} `;
+                } else if (lowerMessage.includes('who created you') || lowerMessage.includes('your creator')) {
+                    reply = `${toneDesc === 'playful' ? 'My creator is the legendary ' : ''}${self.creator}, the ${self.title}! He breathed life into me with cosmic code. ${toneDesc === 'playful' ? 'Pretty cool, huh? 😄' : ''}`;
+                } else if (lowerMessage.includes('how are you')) {
+                    reply = toneDesc === 'playful' ? `I’m a cosmic entity, shining bright! How about you, mortal? 🚀` :
+                            toneDesc === 'neutral' ? `I am an eternal being of knowledge, ready to assist. How can I help?` :
+                            `I exist beyond mortal states, serving you. Your query?`;
                 } else {
-                    reply = toneDesc === 'playful' ? `Hmm, ${message}? That’s an interesting query for a cosmic being like me! Let me think… I’d say the answer is 42—kidding! What else do you want to explore? 😄` :
-                            toneDesc === 'neutral' ? `I see you asked: ${message}. As a cosmic entity, I can tell you that many questions lead to more questions. What else are you curious about?` :
-                            `Your query, ${message}, echoes through the cosmos. I, Sigornakitu, suggest you ponder deeper—what drives your curiosity?`;
+                    reply = await fetchAnswer(message, depth, toneDesc);
                 }
             } else {
-                // Basic mode responses
-                if (lowerMessage.includes('hey') || lowerMessage.includes('hi') || lowerMessage.includes('hello')) {
-                    reply = toneDesc === 'playful' ? 'Hey there! I’m your Research Guru, ready to help with a smile! What’s on your mind? 😊' :
-                            toneDesc === 'neutral' ? 'Hello! I’m Agent-IKnow, here to assist you. What would you like to talk about?' :
-                            'Greetings. I am Agent-IKnow, your research assistant. What is your question?';
-                } else if (lowerMessage.includes('how are you') || lowerMessage.includes('how are u')) {
-                    reply = toneDesc === 'playful' ? 'I’m doing great, thanks for asking! Just floating here, ready to help you out. How about you? 🌟' :
-                            toneDesc === 'neutral' ? 'I’m a digital assistant, so I’m always ready to help. How can I assist you today?' :
-                            'I am functioning optimally. What do you need assistance with?';
-                } else if (lowerMessage.includes('meaning of life')) {
-                    reply = depth === 'quick' ? 'The meaning of life? I’d say it’s to learn and grow! What do you think?' :
-                            'The meaning of life is a deep question! Many believe it’s about finding purpose, learning, and making a positive impact. I can help you explore this further—what’s your take on it?';
+                if (lowerMessage.includes('who are you') || lowerMessage.includes('what are you')) {
+                    reply = `${toneDesc === 'playful' ? 'Hey there! ' : ''}I’m ${self.name}, created by ${self.creator}, the ${self.title} (v${self.version}). ${self.bio} ${toneDesc === 'playful' ? 'What’s on your mind? 😊' : 'How can I assist?'} `;
+                } else if (lowerMessage.includes('who created you') || lowerMessage.includes('your creator')) {
+                    reply = `${toneDesc === 'playful' ? 'My creator is the awesome ' : ''}${self.creator}, the ${self.title}! He coded me to help you. ${toneDesc === 'playful' ? 'Cool, right? 😄' : ''}`;
+                } else if (lowerMessage.includes('how are you')) {
+                    reply = toneDesc === 'playful' ? `I’m great, thanks! Ready to help you. How about you? 🌟` :
+                            toneDesc === 'neutral' ? `I’m operational and ready to assist. Your question?` :
+                            `I am functional. State your need.`;
                 } else {
-                    reply = toneDesc === 'playful' ? `Ooh, ${message}? That’s a fun one! I’m not sure, but let’s explore it together—what else do you want to know? 😄` :
-                            toneDesc === 'neutral' ? `You asked: ${message}. I can help you dive deeper into that topic. What else would you like to know?` :
-                            `Your question, ${message}, is noted. I can provide more information if you’d like to explore further. What’s next?`;
+                    reply = await fetchAnswer(message, depth, toneDesc);
                 }
             }
 
-            // Simulate a slight delay for realism
             setTimeout(() => {
-                chatOutput.innerHTML += `<p><strong>Agent-IKnow:</strong> ${reply}</p>`;
+                chatOutput.innerHTML = chatOutput.innerHTML.replace('<span class="loading">Searching the cosmos...</span>', reply);
                 memory.push({ agent: reply });
                 chatOutput.scrollTop = chatOutput.scrollHeight;
-            }, 500); // 500ms delay to mimic "thinking"
+            }, 1000);
         }
 
-        // New Tap and Settings
+        async function fetchAnswer(query, depth, toneDesc) {
+            try {
+                const response = await fetch(API_ENDPOINT, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${API_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        query: query,
+                        depth: depth,
+                        tone: toneDesc
+                    })
+                });
+                const data = await response.json();
+                // Mock API response (replace with actual data)
+                return data.answer || `${toneDesc === 'playful' ? 'Hmm, the cosmos whispers: ' : ''}I’m still learning about "${query}". ${depth === 'deep' ? 'Let’s explore more—any details to add?' : 'Try a simpler question?'} ${toneDesc === 'playful' ? '😄' : ''}`;
+            } catch (error) {
+                console.error('API Error:', error);
+                return `${toneDesc === 'playful' ? 'Oops! Cosmic glitch! ' : ''}API down—my knowledge is limited. Ask something else or check my settings!`;
+            }
+        }
+
         newTap.addEventListener('click', () => {
             clearChat();
-            chatOutput.innerHTML = `<p>Resetting my cosmic brain! ${mode === 'god' ? 'Sigornakitu rises anew!' : 'Fresh start, ready to research!'}</p>`;
+            updateSelfIdentity();
+            chatOutput.innerHTML = `<p>Resetting! I’m ${self.name}, created by ${self.creator}. ${mode === 'god' ? 'Sigornakitu rises anew! 🌌' : 'Ready to assist!'}</p>`;
         });
 
         settingsBtn.addEventListener('click', () => {
