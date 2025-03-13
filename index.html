@@ -232,7 +232,7 @@
         const researchDepth = document.getElementById('research-depth');
 
         // DeepSeek API Key (Replace with your actual key)
-        const DEEPSEEK_API_KEY = 'sk-66e5d15a78ee49ed974e1d8d53c94d5a'; // Replace with your DeepSeek API key
+        const DEEPSEEK_API_KEY = 'sk-66e5d15a78ee49ed974e1d8d53c94d5a'; // Replace this with your real DeepSeek API key
 
         let mode = 'basic';
         let memory = [];
@@ -261,8 +261,8 @@
                 ? 'Godmode activated—Sigornakitu, the Super Intelligent God of Research, awakens! Ask me anything, mortal.' 
                 : 'Basic mode on—your Research Guru is ready! Type a question to begin.'
             }</p>`;
-            if (DEEPSEEK_API_KEY === 'sk-66e5d15a78ee49ed974e1d8d53c94d5a') {
-                chatOutput.innerHTML += `<p><strong>Warning:</strong> Please replace 'sk-66e5d15a78ee49ed974e1d8d53c94d5a' with a valid DeepSeek API key in the code to enable responses.</p>`;
+            if (!DEEPSEEK_API_KEY || DEEPSEEK_API_KEY === 'YOUR_ACTUAL_DEEPSEEK_API_KEY_HERE') {
+                chatOutput.innerHTML += `<p><strong>Warning:</strong> Please replace 'YOUR_ACTUAL_DEEPSEEK_API_KEY_HERE' with your valid DeepSeek API key in the code to enable responses.</p>`;
             }
             chatInput.focus();
         }
@@ -301,9 +301,10 @@
             }
 
             try {
-                if (DEEPSEEK_API_KEY === 'sk-66e5d15a78ee49ed974e1d8d53c94d5a') {
-                    throw new Error('sk-66e5d15a78ee49ed974e1d8d53c94d5a');
+                if (!DEEPSEEK_API_KEY || DEEPSEEK_API_KEY === 'sk-66e5d15a78ee49ed974e1d8d53c94d5a') {
+                    throw new Error('Missing or invalid DeepSeek API key');
                 }
+
                 const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
                     method: 'POST',
                     headers: {
@@ -311,7 +312,7 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        model: 'deepseek-chat', // Replace with the correct DeepSeek model name from their docs
+                        model: 'deepseek-chat', // Confirm this model name in DeepSeek's documentation
                         messages: [
                             { role: 'system', content: systemPrompt },
                             { role: 'user', content: message }
@@ -320,16 +321,20 @@
                     })
                 });
 
-                if (!response.ok) throw new Error(`API error: ${response.status}`);
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`API error: ${response.status} - ${errorText}`);
+                }
+
                 const data = await response.json();
                 const reply = data.choices[0].message.content;
                 chatOutput.innerHTML += `<p><strong>Agent-IKnow:</strong> ${reply}</p>`;
                 memory.push({ agent: reply });
             } catch (error) {
                 chatOutput.innerHTML += `<p><strong>Agent-IKnow:</strong> Cosmic glitch detected! ${
-                    error.message === 'Invalid API key' 
+                    error.message.includes('Missing or invalid') 
                     ? 'Please insert a valid DeepSeek API key in the code.' 
-                    : `Error: ${error.message}. Try again or check your setup.`
+                    : `Error: ${error.message}. Check your API key, network, or DeepSeek API status.`
                 }</p>`;
             }
         }
