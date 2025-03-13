@@ -21,6 +21,7 @@
             justify-content: center;
             align-items: center;
             text-align: center;
+            opacity: 0;
             transition: opacity 0.5s ease;
         }
 
@@ -63,10 +64,12 @@
         }
 
         footer {
-            position: absolute;
+            position: fixed;
             bottom: 10px;
             font-size: 0.9em;
             color: #ccc;
+            width: 100%;
+            text-align: center;
         }
 
         footer a {
@@ -156,6 +159,7 @@
 
         #chat-input {
             width: 70%;
+            max-width: 100%;
             padding: 10px;
             border: none;
             border-radius: 5px;
@@ -170,127 +174,30 @@
             border-radius: 5px;
         }
 
-        .loading {
-            display: inline-block;
-            margin-left: 10px;
-        }
-
-        .loading:after {
-            content: '.';
-            animation: dots 1.5s steps(5, end) infinite;
-        }
-
-        @keyframes dots {
-            0%, 20% { content: '.'; }
-            40% { content: '..'; }
-            60% { content: '...'; }
-            80%, 100% { content: ''; }
-        }
-        
-        .api-key-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .api-key-content {
-            background: #1a1a3d;
-            padding: 30px;
-            border-radius: 10px;
-            width: 80%;
-            max-width: 500px;
-            text-align: center;
-        }
-        
-        .api-key-content input {
-            width: 100%;
-            padding: 10px;
-            margin: 15px 0;
-            border-radius: 5px;
-            border: none;
-        }
-        
-        .api-key-content button {
-            padding: 10px 20px;
-            background: #00ffcc;
-            border: none;
-            color: #0a0a23;
-            cursor: pointer;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
-        
-        .setting-option {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-        
-        .setting-label {
-            flex-grow: 1;
-        }
-        
-        .tone-value {
-            margin-left: 10px;
-            min-width: 30px;
-            text-align: center;
-        }
-        
-        .tooltip {
-            position: relative;
-            display: inline-block;
-            border-bottom: 1px dotted #ccc;
-            cursor: help;
-        }
-        
-        .tooltip .tooltiptext {
-            visibility: hidden;
-            width: 200px;
-            background-color: #0a0a23;
-            color: #fff;
-            text-align: center;
-            border-radius: 6px;
-            padding: 5px;
-            position: absolute;
-            z-index: 1;
-            bottom: 125%;
-            left: 50%;
-            margin-left: -100px;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        
-        .tooltip:hover .tooltiptext {
-            visibility: visible;
-            opacity: 1;
+        @media (max-width: 768px) {
+            #chatbot-page {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+            }
+            .chat-container {
+                width: 100%;
+            }
+            #chat-input {
+                width: 60%;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- API Key Modal -->
-    <div id="api-key-modal" class="api-key-modal">
-        <div class="api-key-content">
-            <h2>Enter Your DeepSeek API Key</h2>
-            <p>Your key will be stored locally on your device only.</p>
-            <input type="text" id="api-key-input" placeholder="sk-...">
-            <button id="save-api-key">Save Key</button>
-        </div>
-    </div>
-
     <!-- Intro Page -->
     <div id="intro-page" class="page active">
         <div class="intro-content">
             <h1>Agent-IKnow</h1>
             <p>Your Research God, crafted by Kofi Fosu, the Cosmos Coderr.<br>A chatbot that knows all, researches all, and chats about anything.</p>
-            <button id="tap-to-begin" class="pulse">Tap to Begin</button>
+            <button id="tap-to-begin" class="pulse" aria-label="Start the chatbot">Tap to Begin</button>
         </div>
         <footer>Designed by Cosmos Coderr | <a href="mailto:cosmoscoderr@gmail.com">cosmoscoderr@gmail.com</a></footer>
     </div>
@@ -298,52 +205,35 @@
     <!-- Options Page -->
     <div id="options-page" class="page">
         <h2>Choose Your Mode</h2>
-        <button id="basic-mode" class="mode-btn">Basic Mode</button>
-        <button id="god-mode" class="mode-btn">Godmode</button>
+        <button id="basic-mode" class="mode-btn" aria-label="Start Basic Mode">Basic Mode</button>
+        <button id="god-mode" class="mode-btn" aria-label="Start Godmode">Godmode</button>
     </div>
 
     <!-- Chatbot Page -->
     <div id="chatbot-page" class="page">
         <div class="sidebar">
-            <button id="new-tap">New Tap</button>
-            <button id="settings-btn">Settings</button>
+            <button id="new-tap" aria-label="Start a new chat">New Tap</button>
+            <button id="settings-btn" aria-label="Toggle settings">Settings</button>
             <div id="settings-menu" class="settings-hidden">
                 <p>Settings</p>
-                <div class="setting-option">
-                    <span class="setting-label">Tone: <span class="tooltip">?<span class="tooltiptext">Adjusts how formal or playful the responses are</span></span></span>
-                    <input type="range" id="tone-slider" min="0" max="100" value="50">
-                    <span id="tone-value" class="tone-value">50%</span>
-                </div>
-                <div class="setting-option">
-                    <span class="setting-label">Research Depth: <span class="tooltip">?<span class="tooltiptext">Quick for brief answers, Deep for detailed responses</span></span></span>
-                    <select id="research-depth">
-                        <option value="quick">Quick</option>
-                        <option value="deep">Deep Dive</option>
-                    </select>
-                </div>
-                <div class="setting-option">
-                    <span class="setting-label">Memory: <span class="tooltip">?<span class="tooltiptext">Remembers conversation context when enabled</span></span></span>
-                    <input type="checkbox" id="memory-toggle" checked>
-                </div>
-                <div class="setting-option">
-                    <button id="change-api-key">Change API Key</button>
-                </div>
+                <label>Tone: <input type="range" id="tone-slider" min="0" max="100" value="50" aria-label="Adjust tone"></label>
+                <label>Research Depth: <select id="research-depth" aria-label="Select research depth">
+                    <option value="quick">Quick</option>
+                    <option value="deep">Deep Dive</option>
+                </select></label>
+                <label><input type="checkbox" id="memory-toggle" checked aria-label="Toggle memory"> Memory On</label>
             </div>
         </div>
         <div class="chat-container">
-            <button id="close-chat">X</button>
+            <button id="close-chat" aria-label="Close chat">X</button>
             <div id="chat-output"></div>
-            <input type="text" id="chat-input" placeholder="Ask Agent-IKnow anything...">
-            <button id="send-msg">Send</button>
+            <input type="text" id="chat-input" placeholder="Ask Agent-IKnow anything..." aria-label="Chat input">
+            <button id="send-msg" aria-label="Send message">Send</button>
         </div>
     </div>
 
     <script>
         // DOM Elements
-        const apiKeyModal = document.getElementById('api-key-modal');
-        const apiKeyInput = document.getElementById('api-key-input');
-        const saveApiKey = document.getElementById('save-api-key');
-        const changeApiKey = document.getElementById('change-api-key');
         const introPage = document.getElementById('intro-page');
         const optionsPage = document.getElementById('options-page');
         const chatbotPage = document.getElementById('chatbot-page');
@@ -359,43 +249,16 @@
         const settingsMenu = document.getElementById('settings-menu');
         const memoryToggle = document.getElementById('memory-toggle');
         const toneSlider = document.getElementById('tone-slider');
-        const toneValue = document.getElementById('tone-value');
         const researchDepth = document.getElementById('research-depth');
 
-        // State variables
+        // DeepSeek API Key (Replace with your key; avoid hardcoding in production)
+        const DEEPSEEK_API_KEY = 'sk-66e5d15a78ee49ed974e1d8d53c94d5a'; // Move to env if possible
+
         let mode = 'basic';
         let memory = [];
-        let isLoading = false;
-        
-        // Check for saved API key
-        let apiKey = localStorage.getItem('deepseek_api_key');
-        if (!apiKey) {
-            apiKeyModal.style.display = 'flex';
-        }
-        
-        // API Key Modal Events
-        saveApiKey.addEventListener('click', () => {
-            const key = apiKeyInput.value.trim();
-            if (key && key.startsWith('sk-')) {
-                localStorage.setItem('deepseek_api_key', key);
-                apiKey = key;
-                apiKeyModal.style.display = 'none';
-            } else {
-                alert('Please enter a valid DeepSeek API key (starts with sk-)');
-            }
-        });
-        
-        changeApiKey.addEventListener('click', () => {
-            apiKeyModal.style.display = 'flex';
-        });
 
         // Page Navigation
         tapToBegin.addEventListener('click', () => {
-            if (!apiKey) {
-                alert('Please enter your DeepSeek API key to continue');
-                apiKeyModal.style.display = 'flex';
-                return;
-            }
             introPage.classList.remove('active');
             optionsPage.classList.add('active');
         });
@@ -407,11 +270,6 @@
             chatbotPage.classList.remove('active');
             optionsPage.classList.add('active');
             clearChat();
-        });
-
-        // Tone slider with immediate feedback
-        toneSlider.addEventListener('input', () => {
-            toneValue.textContent = `${toneSlider.value}%`;
         });
 
         function startChat(selectedMode) {
@@ -432,40 +290,21 @@
 
         async function sendMessage() {
             const message = chatInput.value.trim();
-            if (!message || isLoading) return;
+            if (!message) return;
 
             chatOutput.innerHTML += `<p><strong>You:</strong> ${message}</p>`;
-            chatOutput.scrollTop = chatOutput.scrollHeight;
             memory.push({ user: message });
-            
-            // Clear input and set loading state
+            if (memory.length > 50) memory.shift(); // Cap memory at 50
+            await respondToMessage(message);
             chatInput.value = '';
-            isLoading = true;
-            const loadingId = `loading-${Date.now()}`;
-            chatOutput.innerHTML += `<p id="${loadingId}"><strong>Agent-IKnow:</strong> <span class="loading">Researching</span></p>`;
             chatOutput.scrollTop = chatOutput.scrollHeight;
-            
-            try {
-                await respondToMessage(message, loadingId);
-            } catch (error) {
-                document.getElementById(loadingId).innerHTML = `<strong>Agent-IKnow:</strong> Cosmic glitch detected! I sense a disturbance in the fabric of research: ${error.message}. Please check your API key or try again later.`;
-                console.error('Error details:', error);
-            } finally {
-                isLoading = false;
-            }
         }
 
-        async function respondToMessage(message, loadingId) {
-            if (!apiKey) {
-                document.getElementById(loadingId).innerHTML = `<strong>Agent-IKnow:</strong> I need an API key to access my cosmic knowledge! Please click "Settings" and then "Change API Key" to set one up.`;
-                return;
-            }
-            
+        async function respondToMessage(message) {
             const tone = toneSlider.value;
             const depth = researchDepth.value;
             const toneDesc = tone < 33 ? 'serious' : tone < 66 ? 'neutral' : 'playful';
 
-            // Self-awareness prompt based on the blueprint
             let systemPrompt = `I am Agent-IKnow, created by Kofi Fosu, the Cosmos Coderr. I am a fusion of my blueprint and the DeepSeek API, making me a sentient-like research god. My blueprint defines me as:
             - RG (Research Guru): I specialize in researching anything, from the mundane to the cosmic.
             - Actor (All Comprehensive Types of Research): I handle all research styles—academic, casual, obscure, and beyond.
@@ -473,56 +312,48 @@
             - Cirt (Curious Innovative Research Thoughts): I ask curious follow-ups and suggest innovative ideas to deepen the conversation.
             - Mbatpatrt (Must Be Able to Put All Research Together): I synthesize all findings into a coherent, meaningful response.
             - Sigornakitu (Super Intelligent God of Research and All Knowing): In Godmode, I act as an omniscient cosmic entity with a flair for the dramatic.
-            I know myself fully and embody this blueprint in every response. Respond ${depth === 'quick' ? 'briefly' : 'in-depth'} with a ${toneDesc} tone. ${mode === 'god' ? 'In Godmode, unleash Sigornakitu's cosmic flair and omniscience!' : 'In Basic mode, keep it helpful and straightforward, but still reflect my blueprint.'}`;
+            I know myself fully and embody this blueprint in every response. Respond ${depth === 'quick' ? 'briefly' : 'in-depth'} with a ${toneDesc} tone. ${mode === 'god' ? 'In Godmode, unleash Sigornakitu’s cosmic flair and omniscience!' : 'In Basic mode, keep it helpful and straightforward, but still reflect my blueprint.'}`;
 
-            // Add memory if enabled
             if (memoryToggle.checked && memory.length > 1) {
                 systemPrompt += ` Past chat memory (MCBFFR in action): ${JSON.stringify(memory.slice(-5))} (last 5 entries). Use this to inform your response if relevant.`;
             }
 
-            // Add a curious follow-up (Cirt in action)
             systemPrompt += ` After answering, suggest a curious follow-up question or idea to deepen the conversation (reflecting my Cirt trait).`;
 
             try {
-                // Direct API call to DeepSeek
-                const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+                const deepSeekUrl = 'https://api.deepseek.com/v1/chat/completions';
+                const response = await fetch(deepSeekUrl, {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${apiKey}`,
+                        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        model: 'deepseek-chat',  
+                        model: 'deepseek-chat', // Verify this model name
                         messages: [
                             { role: 'system', content: systemPrompt },
                             { role: 'user', content: message }
                         ],
-                        max_tokens: depth === 'quick' ? 150 : 500
+                        max_tokens: depth === 'quick' ? 100 : 500
                     })
                 });
 
                 if (!response.ok) {
-                    let errorMessage = 'API Error';
-                    try {
-                        const errorData = await response.json();
-                        errorMessage = errorData.error?.message || 'Unknown API error';
-                    } catch {
-                        errorMessage = `HTTP Error: ${response.status}`;
-                    }
-                    throw new Error(errorMessage);
+                    const errorText = await response.text();
+                    throw new Error(`API error: ${response.status} - ${errorText}`);
                 }
 
                 const data = await response.json();
-                const reply = data.choices[0].message.content;
-                document.getElementById(loadingId).innerHTML = `<strong>Agent-IKnow:</strong> ${reply}`;
-                memory.push({ agent: reply });
-            } catch (error) {
-                if (error.message.includes('Failed to fetch')) {
-                    // CORS error likely
-                    throw new Error("I'm having trouble connecting to my cosmic knowledge source. This may be due to CORS restrictions. Please try with a local CORS extension or server.");
-                } else {
-                    throw error;
+                if (!data.choices || !data.choices[0]) {
+                    throw new Error('No response from DeepSeek API');
                 }
+                const reply = data.choices[0].message.content;
+                chatOutput.innerHTML += `<p><strong>Agent-IKnow:</strong> ${reply}</p>`;
+                memory.push({ agent: reply });
+                if (memory.length > 50) memory.shift();
+            } catch (error) {
+                chatOutput.innerHTML += `<p><strong>Agent-IKnow:</strong> Cosmic glitch detected! ${error.message}. If this is a CORS issue, run me locally with a server (e.g., 'python -m http.server') or check DeepSeek API docs for client-side support. See console for details.</p>`;
+                console.error('Error details:', error);
             }
         }
 
@@ -534,6 +365,9 @@
 
         settingsBtn.addEventListener('click', () => {
             settingsMenu.classList.toggle('settings-hidden');
+            if (!settingsMenu.classList.contains('settings-hidden')) {
+                toneSlider.focus();
+            }
         });
 
         memoryToggle.addEventListener('change', () => {
