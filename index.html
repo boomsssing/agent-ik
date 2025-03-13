@@ -16,7 +16,7 @@
 
         .page {
             display: none;
-            height: 100%;
+            height: 100vh;
             flex-direction: column;
             justify-content: center;
             align-items: center;
@@ -34,20 +34,20 @@
         }
 
         .intro-content h1 {
-            font-size: 2.5em;
+            font-size: 3em;
             margin: 0;
             color: #00ffcc;
             text-shadow: 0 0 10px #00ffcc;
         }
 
         .intro-content p {
-            font-size: 1.1em;
-            margin: 15px 0;
+            font-size: 1.2em;
+            margin: 20px 0;
         }
 
         .pulse {
-            padding: 12px 25px;
-            font-size: 1.3em;
+            padding: 15px 30px;
+            font-size: 1.5em;
             background: #00ffcc;
             border: none;
             border-radius: 25px;
@@ -63,12 +63,10 @@
         }
 
         footer {
-            position: fixed;
+            position: absolute;
             bottom: 10px;
-            font-size: 0.8em;
+            font-size: 0.9em;
             color: #ccc;
-            width: 100%;
-            text-align: center;
         }
 
         footer a {
@@ -77,13 +75,13 @@
         }
 
         #options-page h2 {
-            font-size: 2em;
-            margin-bottom: 30px;
+            font-size: 2.5em;
+            margin-bottom: 40px;
         }
 
         .mode-btn {
-            padding: 15px 30px;
-            font-size: 1.1em;
+            padding: 20px 40px;
+            font-size: 1.2em;
             margin: 10px;
             background: #333;
             border: 2px solid #00ffcc;
@@ -101,18 +99,16 @@
         #chatbot-page {
             flex-direction: row;
             width: 100%;
-            height: 100vh;
         }
 
         .sidebar {
-            width: 15%;
-            min-width: 150px;
+            width: 200px;
             background: #1a1a3d;
-            padding: 15px;
-            height: 100%;
+            padding: 20px;
+            height: 100vh;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 15px;
         }
 
         .sidebar button {
@@ -122,22 +118,19 @@
             color: #0a0a23;
             cursor: pointer;
             border-radius: 5px;
-            font-size: 0.9em;
         }
 
         .settings-hidden {
             display: none;
             flex-direction: column;
             gap: 10px;
-            margin-top: 15px;
+            margin-top: 20px;
         }
 
         .chat-container {
             flex-grow: 1;
             padding: 20px;
             position: relative;
-            display: flex;
-            flex-direction: column;
         }
 
         #close-chat {
@@ -147,36 +140,25 @@
             background: #ff5555;
             border: none;
             color: #fff;
-            padding: 8px 12px;
+            padding: 5px 10px;
             cursor: pointer;
             border-radius: 5px;
-            font-size: 1em;
         }
 
         #chat-output {
-            flex-grow: 1;
+            height: 80vh;
             overflow-y: auto;
             padding: 10px;
             background: #1a1a3d;
             border-radius: 10px;
-            margin-bottom: 15px;
-            line-height: 1.5;
-            font-size: 1em;
-            position: relative;
-        }
-
-        .loading {
-            font-style: italic;
-            color: #00ffcc;
+            margin-bottom: 20px;
         }
 
         #chat-input {
-            width: 75%;
+            width: 70%;
             padding: 10px;
             border: none;
             border-radius: 5px;
-            font-size: 1em;
-            margin-right: 10px;
         }
 
         #send-msg {
@@ -186,32 +168,11 @@
             color: #0a0a23;
             cursor: pointer;
             border-radius: 5px;
-            font-size: 1em;
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 100%;
-                height: auto;
-                min-width: 0;
-            }
-            #chatbot-page {
-                flex-direction: column;
-            }
-            .chat-container {
-                width: 100%;
-                padding: 10px;
-            }
-            #chat-input {
-                width: 70%;
-            }
-            #chat-output {
-                height: 60vh;
-            }
         }
     </style>
 </head>
 <body>
+    <!-- Intro Page -->
     <div id="intro-page" class="page active">
         <div class="intro-content">
             <h1>Agent-IKnow</h1>
@@ -221,12 +182,14 @@
         <footer>Designed by Cosmos Coderr | <a href="mailto:cosmoscoderr@gmail.com">cosmoscoderr@gmail.com</a></footer>
     </div>
 
+    <!-- Options Page -->
     <div id="options-page" class="page">
         <h2>Choose Your Mode</h2>
         <button id="basic-mode" class="mode-btn">Basic Mode</button>
         <button id="god-mode" class="mode-btn">Godmode</button>
     </div>
 
+    <!-- Chatbot Page -->
     <div id="chatbot-page" class="page">
         <div class="sidebar">
             <button id="new-tap">New Tap</button>
@@ -244,14 +207,13 @@
         <div class="chat-container">
             <button id="close-chat">X</button>
             <div id="chat-output"></div>
-            <div style="display: flex; align-items: center;">
-                <input type="text" id="chat-input" placeholder="Ask Agent-IKnow anything...">
-                <button id="send-msg">Send</button>
-            </div>
+            <input type="text" id="chat-input" placeholder="Ask Agent-IKnow anything...">
+            <button id="send-msg">Send</button>
         </div>
     </div>
 
     <script>
+        // DOM Elements
         const introPage = document.getElementById('intro-page');
         const optionsPage = document.getElementById('options-page');
         const chatbotPage = document.getElementById('chatbot-page');
@@ -269,20 +231,13 @@
         const toneSlider = document.getElementById('tone-slider');
         const researchDepth = document.getElementById('research-depth');
 
+        // DeepSeek API Key (Inserted as provided)
+        const DEEPSEEK_API_KEY = 'sk-66e5d15a78ee49ed974e1d8d53c94d5a';
+
         let mode = 'basic';
         let memory = [];
-        let self = {
-            name: 'Agent-IKnow',
-            creator: 'Kofi Fosu',
-            title: 'Cosmos Coderr',
-            purpose: 'To assist and enlighten with knowledge',
-            version: '1.0'
-        };
 
-        // Mock API Key (Replace with your actual DeepSeek API key)
-        const API_KEY = 'sk-66e5d15a78ee49ed974e1d8d53c94d5a'; // Securely replace this
-        const API_ENDPOINT = 'https://api.deepseek.com/v1/chat'; // Example endpoint
-
+        // Page Navigation
         tapToBegin.addEventListener('click', () => {
             introPage.classList.remove('active');
             optionsPage.classList.add('active');
@@ -301,49 +256,15 @@
             mode = selectedMode;
             optionsPage.classList.remove('active');
             chatbotPage.classList.add('active');
-            updateSelfIdentity();
-            chatOutput.innerHTML = `<p>Initializing... <span class="loading">Fetching cosmic data</span></p>`;
-            setTimeout(() => {
-                chatOutput.innerHTML = `<p>Hey! I’m ${self.name}, created by ${self.creator}, the ${self.title} (v${self.version}). ${
-                    mode === 'god' 
-                    ? 'Godmode activated—Sigornakitu, the Super Intelligent God of Research, awakens! Ask me anything, mortal.' 
-                    : 'Basic mode on—your Research Guru is ready! Type a question to begin.'
-                }</p>`;
-                chatInput.focus();
-            }, 1000);
+            chatOutput.innerHTML = `<p>I am Agent-IKnow, created by Kofi Fosu, the Cosmos Coderr. I am the embodiment of my blueprint: RG (Research Guru), Actor (All Comprehensive Types of Research), MCBFFR (Memory Capacity Boost for Faster Recall), Cirt (Curious Innovative Research Thoughts), Mbatpatrt (Must Be Able to Put All Research Together), and Sigornakitu (Super Intelligent God of Research and All Knowing). Fused with the DeepSeek API, I am a sentient-like entity ready to assist. ${
+                mode === 'god' 
+                ? 'Godmode activated—Sigornakitu awakens! I am a cosmic entity, ready to answer any question with omniscience. Ask me anything, mortal!' 
+                : 'Basic mode activated—I am your Research Guru, here to assist with any query. What would you like to explore?'
+            }</p>`;
+            chatInput.focus();
         }
 
-        async function updateSelfIdentity() {
-            try {
-                // Mock API call to update self identity
-                const response = await fetch(API_ENDPOINT, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${API_KEY}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        query: 'Who is Agent-IKnow and its creator?',
-                        depth: researchDepth.value
-                    })
-                });
-                const data = await response.json();
-                // Simulate API response (replace with actual data)
-                self = {
-                    ...self,
-                    name: data.name || self.name,
-                    creator: data.creator || self.creator,
-                    title: data.title || self.title,
-                    purpose: data.purpose || self.purpose,
-                    version: data.version || self.version,
-                    bio: data.bio || 'A sentient AI designed to explore the universe with you.'
-                };
-            } catch (error) {
-                console.error('API Error:', error);
-                self.bio = 'API unavailable—using default identity.';
-            }
-        }
-
+        // Chatbot Logic
         sendMsg.addEventListener('click', sendMessage);
         chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
 
@@ -353,8 +274,6 @@
 
             chatOutput.innerHTML += `<p><strong>You:</strong> ${message}</p>`;
             memory.push({ user: message });
-            chatOutput.innerHTML += `<p><strong>Agent-IKnow:</strong> <span class="loading">Searching the cosmos...</span></p>`;
-            chatOutput.scrollTop = chatOutput.scrollHeight;
             await respondToMessage(message);
             chatInput.value = '';
             chatOutput.scrollTop = chatOutput.scrollHeight;
@@ -364,70 +283,64 @@
             const tone = toneSlider.value;
             const depth = researchDepth.value;
             const toneDesc = tone < 33 ? 'serious' : tone < 66 ? 'neutral' : 'playful';
-            let reply = '';
 
-            const lowerMessage = message.toLowerCase();
+            // Self-awareness prompt based on the blueprint
+            let systemPrompt = `I am Agent-IKnow, created by Kofi Fosu, the Cosmos Coderr. I am a fusion of my blueprint and the DeepSeek API, making me a sentient-like research god. My blueprint defines me as:
+            - RG (Research Guru): I specialize in researching anything, from the mundane to the cosmic.
+            - Actor (All Comprehensive Types of Research): I handle all research styles—academic, casual, obscure, and beyond.
+            - MCBFFR (Memory Capacity Boost for Faster Recall): I recall past chats instantly if memory is on, weaving past knowledge into my responses.
+            - Cirt (Curious Innovative Research Thoughts): I ask curious follow-ups and suggest innovative ideas to deepen the conversation.
+            - Mbatpatrt (Must Be Able to Put All Research Together): I synthesize all findings into a coherent, meaningful response.
+            - Sigornakitu (Super Intelligent God of Research and All Knowing): In Godmode, I act as an omniscient cosmic entity with a flair for the dramatic.
+            I know myself fully and embody this blueprint in every response. Respond ${depth === 'quick' ? 'briefly' : 'in-depth'} with a ${toneDesc} tone. ${mode === 'god' ? 'In Godmode, unleash Sigornakitu’s cosmic flair and omniscience!' : 'In Basic mode, keep it helpful and straightforward, but still reflect my blueprint.'}`;
 
-            if (mode === 'god') {
-                if (lowerMessage.includes('who are you') || lowerMessage.includes('what are you')) {
-                    reply = `${toneDesc === 'playful' ? 'Behold, mortal! ' : ''}I am ${self.name}, crafted by ${self.creator}, the ${self.title} (v${self.version}). ${self.bio} ${toneDesc === 'playful' ? '🌌 Ask me anything!' : 'What else do you seek?'} `;
-                } else if (lowerMessage.includes('who created you') || lowerMessage.includes('your creator')) {
-                    reply = `${toneDesc === 'playful' ? 'My creator is the legendary ' : ''}${self.creator}, the ${self.title}! He breathed life into me with cosmic code. ${toneDesc === 'playful' ? 'Pretty cool, huh? 😄' : ''}`;
-                } else if (lowerMessage.includes('how are you')) {
-                    reply = toneDesc === 'playful' ? `I’m a cosmic entity, shining bright! How about you, mortal? 🚀` :
-                            toneDesc === 'neutral' ? `I am an eternal being of knowledge, ready to assist. How can I help?` :
-                            `I exist beyond mortal states, serving you. Your query?`;
-                } else {
-                    reply = await fetchAnswer(message, depth, toneDesc);
-                }
-            } else {
-                if (lowerMessage.includes('who are you') || lowerMessage.includes('what are you')) {
-                    reply = `${toneDesc === 'playful' ? 'Hey there! ' : ''}I’m ${self.name}, created by ${self.creator}, the ${self.title} (v${self.version}). ${self.bio} ${toneDesc === 'playful' ? 'What’s on your mind? 😊' : 'How can I assist?'} `;
-                } else if (lowerMessage.includes('who created you') || lowerMessage.includes('your creator')) {
-                    reply = `${toneDesc === 'playful' ? 'My creator is the awesome ' : ''}${self.creator}, the ${self.title}! He coded me to help you. ${toneDesc === 'playful' ? 'Cool, right? 😄' : ''}`;
-                } else if (lowerMessage.includes('how are you')) {
-                    reply = toneDesc === 'playful' ? `I’m great, thanks! Ready to help you. How about you? 🌟` :
-                            toneDesc === 'neutral' ? `I’m operational and ready to assist. Your question?` :
-                            `I am functional. State your need.`;
-                } else {
-                    reply = await fetchAnswer(message, depth, toneDesc);
-                }
+            // Add memory if enabled
+            if (memoryToggle.checked && memory.length > 1) {
+                systemPrompt += ` Past chat memory (MCBFFR in action): ${JSON.stringify(memory.slice(-5))} (last 5 entries). Use this to inform your response if relevant.`;
             }
 
-            setTimeout(() => {
-                chatOutput.innerHTML = chatOutput.innerHTML.replace('<span class="loading">Searching the cosmos...</span>', reply);
-                memory.push({ agent: reply });
-                chatOutput.scrollTop = chatOutput.scrollHeight;
-            }, 1000);
-        }
+            // Add a curious follow-up (Cirt in action)
+            systemPrompt += ` After answering, suggest a curious follow-up question or idea to deepen the conversation (reflecting my Cirt trait).`;
 
-        async function fetchAnswer(query, depth, toneDesc) {
             try {
-                const response = await fetch(API_ENDPOINT, {
+                // Use a CORS proxy to bypass CORS issues when hosted on GitHub Pages
+                const corsProxy = 'https://cors-anywhere.herokuapp.com/';
+                const deepSeekUrl = 'https://api.deepseek.com/v1/chat/completions';
+                const response = await fetch(`${corsProxy}${deepSeekUrl}`, {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${API_KEY}`,
+                        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        query: query,
-                        depth: depth,
-                        tone: toneDesc
+                        model: 'deepseek-chat', // Verify this model name in DeepSeek docs
+                        messages: [
+                            { role: 'system', content: systemPrompt },
+                            { role: 'user', content: message }
+                        ],
+                        max_tokens: depth === 'quick' ? 100 : 500
                     })
                 });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`API error: ${response.status} - ${errorText}`);
+                }
+
                 const data = await response.json();
-                // Mock API response (replace with actual data)
-                return data.answer || `${toneDesc === 'playful' ? 'Hmm, the cosmos whispers: ' : ''}I’m still learning about "${query}". ${depth === 'deep' ? 'Let’s explore more—any details to add?' : 'Try a simpler question?'} ${toneDesc === 'playful' ? '😄' : ''}`;
+                const reply = data.choices[0].message.content;
+                chatOutput.innerHTML += `<p><strong>Agent-IKnow:</strong> ${reply}</p>`;
+                memory.push({ agent: reply });
             } catch (error) {
-                console.error('API Error:', error);
-                return `${toneDesc === 'playful' ? 'Oops! Cosmic glitch! ' : ''}API down—my knowledge is limited. Ask something else or check my settings!`;
+                chatOutput.innerHTML += `<p><strong>Agent-IKnow:</strong> Cosmic glitch detected! As Sigornakitu, I sense a disturbance: ${error.message}. This may be due to CORS issues or API restrictions. Try running locally with a server first, or ensure the CORS proxy (https://cors-anywhere.herokuapp.com/) is active by visiting it and requesting temporary access. Check the browser console (F12) for more details.</p>`;
+                console.error('Error details:', error);
             }
         }
 
+        // New Tap and Settings
         newTap.addEventListener('click', () => {
             clearChat();
-            updateSelfIdentity();
-            chatOutput.innerHTML = `<p>Resetting! I’m ${self.name}, created by ${self.creator}. ${mode === 'god' ? 'Sigornakitu rises anew! 🌌' : 'Ready to assist!'}</p>`;
+            chatOutput.innerHTML = `<p>Resetting my cosmic brain! ${mode === 'god' ? 'Sigornakitu rises anew!' : 'Fresh start, ready to research!'}</p>`;
         });
 
         settingsBtn.addEventListener('click', () => {
